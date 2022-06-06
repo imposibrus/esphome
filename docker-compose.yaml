@@ -1,0 +1,12 @@
+version: '3'
+services:
+  esphome:
+    container_name: esphome
+    image: esphome/esphome:2022.5.1
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    privileged: true
+    network_mode: host
+
