@@ -1,0 +1,3 @@
+[submodule "config/BleDistance"]
+	path = config/BleDistance
+	url = https://github.com/imposibrus/BleDistance.git

@@ -1,0 +1,111 @@
+esphome:
+  name: "livingroom-tracker"
+  # includes:
+  #   - BleDistance/lib/OneEuro.h
+  #   - BleDistance/ble_dist.h
+  # on_boot:
+  #   then:
+  #     lambda: |-
+  #       addTracker("OnePlus5T", "448f3cbf-d94e-4058-9730-b5302f628eda");
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esphome-Web-D04Bdc"
+    password: "GeXKjfKBefss"
+
+captive_portal:
+
+esp32_ble_tracker:
+#  on_ble_advertise:
+#    then:
+#      - lambda: |-
+#          parseAdvertisement(x);
+
+ble_client:
+  - mac_address: '70:28:45:68:0A:03'
+    id: oclean_x
+  - mac_address: '70:28:45:71:A2:36'
+    id: oclean_x_pro_elite
+
+sensor:
+  - platform: ble_client
+    ble_client_id: oclean_x
+    name: "Oclean X Battery"
+    service_uuid: '180f'
+    characteristic_uuid: '2a19'
+    icon: 'mdi:battery'
+    unit_of_measurement: '%'
+
+  - platform: ble_client
+    ble_client_id: oclean_x_pro_elite
+    name: "Oclean X Pro Elite Battery"
+    service_uuid: '180f'
+    characteristic_uuid: '2a19'
+    icon: 'mdi:battery'
+    unit_of_measurement: '%'
+
+  # - platform: template
+  #   name: "OnePlus 5T Distance"
+  #   id: oneplus5t_dist
+  #   update_interval: 30s
+  #   unit_of_measurement: "m"
+  #   device_class: ""
+  #   state_class: "measurement"
+  #   accuracy_decimals: 1
+  #   entity_category: "diagnostic"
+  #   lambda: |-
+  #     return getTracker("OnePlus5T").get_dist();
+
+light:
+  - platform: binary
+    name: "Bath small backlight"
+    output: light_output
+
+output:
+  - id: light_output
+    platform: gpio
+    pin: GPIO27
+
+# sensor:
+#   - platform: resistance
+#     sensor: source_sensor
+#     configuration: UPSTREAM
+#     resistor: 1kOhm
+#     name: Resistance Sensor
+
+#   - platform: adc
+#     id: source_sensor
+#     pin: GPIO32
+#     update_interval: 2s
+    
+# sensor:
+#   - platform: adc
+#     pin: GPIO33
+#     name: "PIR Sensor"
+#     update_interval: 5s
+#     #raw: true
+#     attenuation: auto
+
+#binary_sensor:
+#  - platform: gpio
+#    pin: GPIO27
+#    name: "PIR Sensor"
+#    device_class: motion
