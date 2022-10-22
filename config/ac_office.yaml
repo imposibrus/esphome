@@ -85,9 +85,37 @@ climate:
       name: AC Indoor Temperature
       id: ac_indoor_temp
       internal: false
+    outdoor_temperature:
+      name: AC Outdoor Temperature
+      id: ac_outdoor_temp
+      internal: false
+    outbound_temperature:
+      name: AC Colant Outbound Temperature
+      id: ac_outbound_temp
+      internal: false
+    inbound_temperature:
+      name: AC Colant Inbound Temperature
+      id: ac_inbound_temp
+      internal: false
+    compressor_temperature:
+      name: AC Compressor Temperature
+      id: ac_strange_temp
+      internal: false
+    defrost_state:
+      name: AC Defrost State
+      id: ac_defrost_state
+      internal: false
+    invertor_power:
+      name: AC Invertor Power
+      id: ac_invertor_power
+      internal: false
+    preset_reporter:
+      name: AC Preset Reporter
+      id: ac_preset_reporter
+      internal: false
     display_state:
-      name: AC Display
-      id: ac_display
+      name: AC Display State
+      id: ac_display_state
       internal: false
     visual:
       min_temperature: 16
@@ -106,10 +134,82 @@ climate:
       - SLEEP
     custom_presets:
       - CLEAN
-      - FEEL
       - HEALTH
       - ANTIFUNGUS
     supported_swing_modes:
       - VERTICAL
       - HORIZONTAL
       - BOTH
+
+switch:
+  - platform: template
+    name: AC Office Display
+    lambda: |-
+      if (id(ac_display_state).state) {
+        return true;
+      } else {
+        return false;
+      }
+    turn_on_action:
+      - aux_ac.display_on: ac_office
+    turn_off_action:
+      - aux_ac.display_off: ac_office
+
+button:
+  - platform: template
+    name: AC Office VLouver Stop
+    icon: "mdi:circle-small"
+    on_press:
+      - aux_ac.vlouver_stop: ac_office
+    
+  - platform: template
+    name: AC Office VLouver Swing
+    icon: "mdi:pan-vertical"
+    on_press:
+      - aux_ac.vlouver_swing: ac_office
+    
+  - platform: template
+    name: AC Office VLouver Top
+    icon: "mdi:pan-up"
+    on_press:
+      - aux_ac.vlouver_top: ac_office
+    
+  - platform: template
+    name: AC Office VLouver Middle Above
+    icon: "mdi:pan-top-left"
+    on_press:
+      - aux_ac.vlouver_middle_above: ac_office
+    
+  - platform: template
+    name: AC Office VLouver Middle
+    icon: "mdi:pan-left"
+    on_press:
+      - aux_ac.vlouver_middle: ac_office
+    
+  - platform: template
+    name: AC Office VLouver Middle Below
+    icon: "mdi:pan-bottom-left"
+    on_press:
+      - aux_ac.vlouver_middle_below: ac_office
+    
+  - platform: template
+    name: AC Office VLouver Bottom
+    icon: "mdi:pan-down"
+    on_press:
+      - aux_ac.vlouver_bottom: ac_office
+
+
+number:
+  - platform: template
+    name: AC Office Vertical Louver
+    id: ac_office_vlouver
+    icon: "mdi:circle-small"
+    mode: "slider"
+    min_value: 0
+    max_value: 6
+    step: 1
+    set_action:
+      then:
+        - lambda: !lambda |-
+            if (x == 6) x = 7;  // 6 is incorrect louver position, 7 is stopped louver
+            id(ac_office).setVLouverSequence( static_cast<esphome::aux_ac::ac_louver_V>(x) );
